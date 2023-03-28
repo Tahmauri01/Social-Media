@@ -4,14 +4,25 @@
         <meta charset="utf-8">
         <meta name="viewpoint" content="width=device-width, initial-scale=1">
         <title>Town Talk | Feed</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">
+
         
     </head>
     <body>
         <h1>Post Feed</h1>
         {%for post in posts%}
             <div>
-                <img scr="{{post['post_image']}}" width="200">
-                <p>{{post['post_text']}}</p>
+            <img src="{{post['post_image']}}" width="200">
+            {# <p>{{post['post_text']}}</p> #}
+            <p>{{post['time_stamp'].strftime("%A, %b  %X")}}</p>
+                <div class="card" style="width: 18rem;">
+                    <img src="..." class="card-img-top" alt="...">
+                <div class="card-body">
+            <h5 class="card-title">{{post['display_name']}} | ({{post['username']}})</h5>
+        <p class="card-text">{{post['post_text']}}</p>
+    <a href="#" class="btn btn-primary">Go somewhere</a>
+  </div>
+</div>
             </div>
         {% endfor %}
     </body>
