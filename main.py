@@ -27,5 +27,27 @@ def post_feed():
         posts=results
     )
 
+
+
+
+
+@app.route('/sign-up', method=['POST', 'GET'])
+def sign_in():
+    if request.method == 'POST':
+        cursor = connection.cursor()
+
+        cursor.execute("""
+            INSERT INTO `user` (`bio`,`display_name`,`email`,`password`,`photo`,`username`)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """, ())
+
+
+        return request.form
+    elif request.method == 'GET':
+        return render_template("signup.html.jinja")
+    
+
+
+
 if __name__ == '__main__':
     app.run(debug = True)
