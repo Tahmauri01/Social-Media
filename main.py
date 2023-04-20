@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect
 import pymysql
 import pymysql.cursors
-from flask_login import LoginManager
+from flask_login import LoginManager, current_user
 
 login_manager = LoginManager()
 
@@ -88,7 +88,33 @@ def sign_in():
         return render_template("signup.html.jinja")
     
 
+@app.route('/profile/<username>')
+def user_profile(username):
+    cursor = connection.cursor()
 
+    cursor.execute("SELECT * FROM `user` WHERE `username`= %s", (username))
+
+    result = cursor.fetchone()
+
+    return render_template("userprofile.html.jinja", user=result)
+
+@app.route('/post')
+def create_post():
+    cursor = connection.cursor()
+
+    photo = request.files['file']
+
+    file_name = photo.filename
+
+    file_extension = file_name.split('.')[-1]
+
+    if file_extension in ['jpg', 'jpeg', 'png', 'gif']:
+        photo.save('media/users/' + file_name)
+    else:
+        raise Exception('Invalid file type')
+
+    cursor.execute("INSERT INTO `posts` (`user_id`,`post_text`,`post_image`) VALUES (%s, %s, %s)"
+                   (current_user.id, request.form['post'], file_name))
 
 if __name__ == '__main__':
     app.run(debug = True)

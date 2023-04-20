@@ -9,20 +9,43 @@
         
     </head>
     <body>
+
+
+
+
+
         <h1>Post Feed</h1>
+
+        <br>
+
+            <form action="/post" method="POST" name="post" enctype="multipart/form-data">
+        
+                <input type="text" name="post" placeholder="Post Something">
+                <input type="file" name="file">
+                <input type="submit" name="submit">
+
+            </form>
+
+            <br>
+
         {%for post in posts%}
             <div>
-            <img src="{{post['post_image']}}" width="200">
+            
             {# <p>{{post['post_text']}}</p> #}
-            <p>{{post['time_stamp'].strftime("%A, %b  %X")}}</p>
+            
                 <div class="card" style="width: 18rem;">
-                    <img src="..." class="card-img-top" alt="...">
+                    <img src="{{post['post_image']}}" width="200">
+                    
                 <div class="card-body">
             <h5 class="card-title">{{post['display_name']}} | ({{post['username']}})</h5>
         <p class="card-text">{{post['post_text']}}</p>
-    <a href="#" class="btn btn-primary">Go somewhere</a>
+        <p>{{post['time_stamp'].strftime("%A, %b  %X")}}</p>
+    
   </div>
+  <br>
 </div>
+<br>
+<br>
             </div>
         {% endfor %}
     </body>
