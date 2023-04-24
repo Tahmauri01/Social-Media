@@ -115,6 +115,18 @@ def create_post():
 
     cursor.execute("INSERT INTO `posts` (`user_id`,`post_text`,`post_image`) VALUES (%s, %s, %s)"
                    (current_user.id, request.form['post'], file_name))
+    
+@app.route('/')
+def home():
+    if current_user.is_authenticated:
+        return redirect('/feed')
+    
+    return render_template("home.html.jinja")
+
+
+
+
+
 
 if __name__ == '__main__':
     app.run(debug = True)
