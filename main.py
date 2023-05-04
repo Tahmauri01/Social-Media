@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, g
 import pymysql
 import pymysql.cursors
 from flask_login import LoginManager, current_user
@@ -20,19 +20,32 @@ class User:
     def get_id(self):
         return str(self.id)
 
+def connect_db():
+    return pymysql.connect(
+        host="10.100.33.60",
+        user="tbobo",
+        password="223086750",
+        database="tbobo_social",
+        cursorclass=pymysql.cursors.DictCursor,
+        autocommit=True
+    )
 
-connection = pymysql.connect(
-    host="10.100.33.60",
-    user="tbobo",
-    password="223068750",
-    database="tbobo_social",
-    cursorclass=pymysql.cursors.DictCursor,
-    autocommit=True
-)
+def get_db():
+    '''Opens a new database connection per request.'''        
+    if not hasattr(g, 'db'):
+        g.db = connect_db()
+    return g.db    
+
+@app.teardown_appcontext
+def close_db(error):
+    '''Closes the database connection at the end of request.'''    
+    if hasattr(g, 'db'):
+        g.db.close() 
+
 
 @login_manager.user_loader
 def user_loader(user_id):
-    cursor = connection.cursor()
+    cursor = get_db().cursor()
 
     cursor.execute("SELECT * FROM `users` WHERE `id` = " + user_id)
 
@@ -46,7 +59,8 @@ def user_loader(user_id):
 @app.route('/feed')
 def post_feed():
 
-    cursor = connection.cursor()
+    cursor = get_db().cursor()
+
 
     cursor.execute("SELECT * FROM `posts` JOIN `user` ON `posts`.`user_id` = `user`.`id` ORDER BY `time_stamp` DESC;")
 
@@ -58,13 +72,16 @@ def post_feed():
     )
 
 
-
+@app.errorhandler(404)
+def page_not_found(err):
+    return render_template('404.html.jinja'), 404
 
 
 @app.route('/signup', methods=['POST', 'GET'])
 def sign_in():
     if request.method == 'POST':
-        cursor = connection.cursor()
+        cursor = get_db().cursor()
+
 
         photo = request.files['photo']
 
@@ -90,7 +107,8 @@ def sign_in():
 
 @app.route('/profile/<username>')
 def user_profile(username):
-    cursor = connection.cursor()
+    cursor = cursor = get_db().cursor()
+
 
     cursor.execute("SELECT * FROM `user` WHERE `username`= %s", (username))
 
@@ -100,7 +118,7 @@ def user_profile(username):
 
 @app.route('/post')
 def create_post():
-    cursor = connection.cursor()
+    cursor = get_db().cursor()
 
     photo = request.files['file']
 
@@ -113,7 +131,7 @@ def create_post():
     else:
         raise Exception('Invalid file type')
 
-    cursor.execute("INSERT INTO `posts` (`user_id`,`post_text`,`post_image`) VALUES (%s, %s, %s)"
+    cursor.execute("INSERT INTO `posts` (`user_id`,`post_text`,`post_image`) VALUES (%s, %s, %s)",
                    (current_user.id, request.form['post'], file_name))
     
 @app.route('/')
