@@ -47,7 +47,7 @@ def close_db(error):
 def user_loader(user_id):
     cursor = get_db().cursor()
 
-    cursor.execute("SELECT * FROM `users` WHERE `id` = " + user_id)
+    cursor.execute("SELECT * FROM `users` WHERE `id` = %s" + user_id)
 
     result = cursor.fetchone()
 
@@ -62,7 +62,7 @@ def post_feed():
     cursor = get_db().cursor()
 
 
-    cursor.execute("SELECT * FROM `posts` JOIN `user` ON `posts`.`user_id` = `user`.`id` ORDER BY `time_stamp` DESC;")
+    cursor.execute("SELECT * FROM `posts` JOIN `user` ON `posts`.`user_id` = `user`.`id` ORDER BY `time_stamp` DESC; = %s")
 
     results = cursor.fetchall()
 

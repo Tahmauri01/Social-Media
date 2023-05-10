@@ -29,7 +29,7 @@
         {%for post in posts%}
             <div>
             
-            {# <p>{{post['post_text']}}</p> #}
+            { <p>{{post['post_text' | escape]}}</p> }
             
                 <div class="card" style="width: 18rem;">
                     <img src="{{post['post_image']}}" width="200">
